@@ -129,25 +129,29 @@ jobs:
           path: downloaded-apk/
 
       - name: Authenticate to Google Cloud
+        id: auth
         uses: google-github-actions/auth@v3
         with:
           credentials_json: '${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}'
+          token_format: 'access_token'
+          access_token_scopes: 'https://www.googleapis.com/auth/drive'
 
       - name: Upload APK to Google Drive
         run: |
-          ACCESS_TOKEN=$(gcloud auth application-default print-access-token)
-          
           APK_FILE="downloaded-apk/app-release.apk"
           APK_NAME="${{ github.event.repository.name }}-${{ github.ref_name }}.apk"
           
           echo "{\"name\": \"${APK_NAME}\", \"parents\": [\"${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}\"]}" > /tmp/metadata.json
           
-          DRIVE_FILE_ID=$(curl -s -X POST \
-            -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+          RESPONSE=$(curl -s -X POST \
+            -H "Authorization: Bearer ${{ steps.auth.outputs.access_token }}" \
             -F "metadata=@/tmp/metadata.json;type=application/json" \
             -F "file=@${APK_FILE};type=application/vnd.android.package-archive" \
-            "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart" \
-            | jq -r '.id')
+            "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart")
+            
+          echo "Google API Response: $RESPONSE"
+          
+          DRIVE_FILE_ID=$(echo "$RESPONSE" | jq -r '.id')
             
           if [ -z "$DRIVE_FILE_ID" ] || [ "$DRIVE_FILE_ID" == "null" ]; then
             echo "Upload failed!"
