@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  DDOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ github.ref_name }}_${{ github.sha }}
+  DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ github.ref_name }}_${{ github.sha }}
 jobs:
   build_web:
     name: Build Flutter Web
