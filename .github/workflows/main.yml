@@ -128,7 +128,7 @@ jobs:
       - name: Download APK Artifact
         uses: actions/download-artifact@v8.0.1
         with:
-          name: apk-build-files
+          name: apk-build-file
           path: downloaded-apk/
 
       - name: Create Release and Upload APK
