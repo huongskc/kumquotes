@@ -3,6 +3,8 @@ name: KumQuotes CI/CD Pipeline
 on:
   push:
     branches:
+      - develop
+      - staging
       - main
 
 env:
@@ -12,6 +14,7 @@ jobs:
   build_web:
     name: Build Flutter Web
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6.0.2
@@ -38,6 +41,7 @@ jobs:
   build_apk:
     name: Build APK file
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6.0.2
@@ -71,6 +75,8 @@ jobs:
     name: Build and Push Docker image
     needs: build_web
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/main'
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6.0.2
@@ -98,6 +104,8 @@ jobs:
     name: Deploy to Firebase
     needs: build_web
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6.0.2
@@ -118,9 +126,10 @@ jobs:
     name: Create Github Release
     needs: build_apk
     runs-on: ubuntu-latest
-
+    if: github.ref == 'refs/heads/main'
     permissions: 
       contents: write
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6.0.2
