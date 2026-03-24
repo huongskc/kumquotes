@@ -99,8 +99,32 @@ jobs:
           context: .
           push: true
           tags: ${{ env.DOCKER_IMAGE }}
-          
-  deploy_web:
+
+  deploy_local:
+    name: Deploy to Local Ubuntu
+    needs: build_web
+    runs-on: self-hosted
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6.0.2
+
+      - name: Stop and Remove Old Container
+        run: |
+          docker stop kumquotes-web || true
+          docker rm kumquotes-web || true
+
+      - name: Remove Old Images
+        run: docker images -q ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }} | xargs -r docker rmi -f || true
+
+      - name: Pull Image
+        run: docker pull ${{ env.DOCKER_IMAGE }}
+
+      - name: Run Container
+        run: docker run --name kumquotes-web -dp 8888:80 ${{ env.DOCKER_IMAGE }}
+
+  deploy_web_firebase:
     name: Deploy to Firebase
     needs: build_web
     runs-on: ubuntu-latest
