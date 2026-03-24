@@ -137,3 +137,25 @@ jobs:
           tag_name: v1.0.${{ github.run_number }}
           name: "KumQuotes Release v1.0.${{ github.run_number }}"
           files: downloaded-apk/app-release.apk
+
+  notify_discord:
+    name: Send Message to Discord
+    needs: create_release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Message
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{
+            "embeds": [{
+              "title": "KumQuotes Newest Release!",
+              "description": "Hiện KumQuotes đã có bản cập nhật mới. Hãy tải về và sử dụng nhé!!!",
+              "color": 3066993,
+              "fields": [
+                { "name": "Phiên bản", "value": "v1.0.${{ github.run_number }}", "inline": true },
+                { "name": "Tải file APK", "value": "[Truy cập trang tải GitHub Releases](https://github.com/${{ github.repository }}/releases/latest)", "inline": false }
+              ],
+              "footer": { "text": "Powered by GitHub Actions" }
+            }]
+          }' \
+          ${{ secrets.DISCORD_WEBHOOK_URL }}
