@@ -44,7 +44,7 @@ class QuoteScreen extends StatefulWidget {
 }
 
 class _QuoteScreenState extends State<QuoteScreen> {
-  String _currentQuote = "Cây quất nhà bạn đang chờ được hái!";
+  String _currentQuote = "";
   String _author = "";
   bool _isLoading = false;
   List<FavoriteQuote> _favorites = [];
@@ -55,6 +55,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
   void initState() {
     super.initState();
     _loadFavorites();
+    _fetchQuote();
   }
 
   Future<void> _loadFavorites() async {
