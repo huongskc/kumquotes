@@ -113,7 +113,7 @@ jobs:
 
   deploy_local:
     name: Deploy to Local Ubuntu
-    needs: build_web
+    needs: dockerize
     runs-on: self-hosted
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
 
