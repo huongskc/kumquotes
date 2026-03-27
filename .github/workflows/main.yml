@@ -58,11 +58,22 @@ jobs:
           distribution: 'zulu' 
           java-version: '17'
 
+      - name: Decode Keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          echo $KEYSTORE_BASE64 | base64 -d > android/app/release-keystore.jks
+
       - name: Install Dependencies
         run: flutter pub get
 
       - name: Build APK file
-        run: flutter build apk
+        env:
+          KEYSTORE_PATH: "release-keystore.jks"
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+        run: flutter build apk --release --build-name=1.0.0 --build-number=${{ github.run_number }}
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v7.0.0
@@ -145,6 +156,7 @@ jobs:
 
       - name: Deploy to Firebase
         run: firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }}
+
 
   create_release:
     name: Create Github Release
