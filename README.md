@@ -100,7 +100,7 @@ Máy ảo Ubuntu chạy Zabbix Agent để gửi dữ liệu về Zabbix Server.
 ### Giám sát dịch vụ
 
 * Sử dụng phương pháp black-box monitoring
-* Zabbix Server gửi http request tới:
+* Zabbix Server lắng nghe cổng:
 
 > http://192.168.40.99:8888
 
