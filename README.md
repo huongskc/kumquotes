@@ -114,7 +114,7 @@ Khi có sự cố như:
 
 Hệ thống sẽ gửi cảnh báo về Discord.
 
----
+----
 
 ## Ghi chú
 
